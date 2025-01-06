@@ -67,7 +67,6 @@ router.get("/images", async (req, res) => {
     const [rows] = await db.query("SELECT * FROM images");
     res.status(200).json(rows);
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       message: "Error al obtener las imágenes."
     });
