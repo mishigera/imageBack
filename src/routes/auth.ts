@@ -91,7 +91,11 @@ router.post('/login', async (req: any, res: any) => {
         }, process.env.JWT_SECRET || 'secret', {
             expiresIn: '1h',
         });
+        const createdAt = new Date(  new Date().getTime() - 6 * 60 * 60 *1000 ).toISOString().slice(0, 19).replace('T', ' '); 
+        const createdDate = new Date(createdAt.replace(' ', 'T'));
+        const expiresAt = new Date(createdDate.getTime() + 60 * 60 * 1000) 
 
+        await db.query('INSERT INTO auth_sessions (user_id, token, created_at, expires_at) VALUES (?,?,?,?)', [user.id, token, createdAt, expiresAt]);
         res.json({
             token,
             user_id: user.id

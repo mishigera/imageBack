@@ -31,8 +31,8 @@ router.post("/upload", middleware, upload.single("image"), async (req:any, res:a
       return res.status(400).json({ message: "No se ha subido ninguna imagen." });
 
     }
-const userId = req.body.user_id;
-    if(!userId){
+    const user_id = req.user?.id;
+    if(!user_id){
       throw new Error("No se ha proporcionado un ID de usuario.");
     }
     const filePath = req.file.path; // Ruta de la imagen subida
@@ -50,7 +50,7 @@ const userId = req.body.user_id;
     await image.write(processedPath);
     // Guardar la URL en la base de datos
     const url = `http://localhost:5001/${processedPath}`;
-    await db.query("INSERT INTO images (url, user_id) VALUES (?, ?)", [url, userId]);
+    await db.query("INSERT INTO images (url, user_id) VALUES (?, ?)", [url, user_id]);
 
     res.status(200).json({
       message: "Imagen procesada y guardada.",
@@ -65,10 +65,14 @@ const userId = req.body.user_id;
 });
 
 // Endpoint para obtener las imágenes
-router.get("/images",middleware, async (req, res) => {
-  console.log('solicitos')
+router.get("/images",middleware, async (req:any, res:any) => {
+  const user_id = req.user?.id;
+
+  if(!user_id){
+    res.status(400).json({message: "No se ha proporcionado un ID de usuario."});
+    return;}
   try {
-    const [rows] = await db.query("SELECT * FROM images");
+    const [rows] = await db.query("SELECT * FROM images WHERE user_id = ?", [user_id]);
     res.status(200).json(rows);
   } catch (error) {
     res.status(500).json({
@@ -76,11 +80,6 @@ router.get("/images",middleware, async (req, res) => {
     });
   }
 });
-
-
-
-
-
 
 
 router.post('/upload2',middleware,upload.single('image'), async (req:any, res:any) => {
