@@ -29,8 +29,12 @@ router.post("/upload", upload.single("image"), async (req:any, res:any) => {
     // Verificar si se envió un archivo
     if (!req.file) {
       return res.status(400).json({ message: "No se ha subido ninguna imagen." });
-    }
 
+    }
+const userId = req.body.user_id;
+    if(!userId){
+      throw new Error("No se ha proporcionado un ID de usuario.");
+    }
     const filePath = req.file.path; // Ruta de la imagen subida
     const processedPath = `uploads/processed-${req.file.filename}`; // Nueva imagen procesada
 
@@ -46,7 +50,7 @@ router.post("/upload", upload.single("image"), async (req:any, res:any) => {
     await image.write(processedPath);
     // Guardar la URL en la base de datos
     const url = `http://localhost:5001/${processedPath}`;
-    await db.query("INSERT INTO images (url) VALUES (?)", [url]);
+    await db.query("INSERT INTO images (url, user_id) VALUES (?, ?)", [url, userId]);
 
     res.status(200).json({
       message: "Imagen procesada y guardada.",

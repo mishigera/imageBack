@@ -21,7 +21,6 @@ app.listen(PORT, () => {
 });
 
 
-
 app.use("/api/images", imageRoutes);
 
 // Servir imágenes desde la carpeta 'uploads'
