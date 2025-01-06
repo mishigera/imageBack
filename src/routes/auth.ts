@@ -64,7 +64,11 @@ import jwt from 'jsonwebtoken';
 router.post('/login', async (req: any, res: any) => {
     const username = req.body.username;
     const password = req.body.password;
-    console.log(req.body)
+    if(!username || !password){
+        return res.status(400).json({
+            message: 'Usuario y contraseña son requeridos'
+        });
+    }
     try {
         // Verificar si el usuario existe
         const [userExists]: any = await db.query('SELECT * FROM users WHERE username = ?', [username]);

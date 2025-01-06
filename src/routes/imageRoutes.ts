@@ -82,26 +82,6 @@ router.get("/images",middleware, async (req:any, res:any) => {
 });
 
 
-router.post('/upload2',middleware,upload.single('image'), async (req:any, res:any) => {
-  try {
-    const filePath = req.file.path;
-    
-    // Guarda la URL en la base de datos
-    const [result]:any = await db.execute('INSERT INTO images (url) VALUES (?)', [filePath]);
-
-    res.status(200).json({ message: 'Imagen cargada con éxito', id: result.insertId });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al cargar la imagen', error });
-  }
-});
-router.get('/',middleware, async (req, res) => {
-  try {
-    const [rows] = await db.execute('SELECT * FROM images ORDER BY created_at DESC');
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener las imágenes', error });
-  }
-});
 
 
 export default router;
