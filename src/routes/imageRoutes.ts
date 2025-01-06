@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import db from "../db";
-
+import { middleware } from "../middlewares/tokenauth";
 
 
 const {
@@ -24,7 +24,7 @@ const upload = multer({
 });
 
 // Endpoint para subir y procesar una imagen
-router.post("/upload", upload.single("image"), async (req:any, res:any) => {
+router.post("/upload", middleware, upload.single("image"), async (req:any, res:any) => {
   try {
     // Verificar si se envió un archivo
     if (!req.file) {
@@ -65,7 +65,7 @@ const userId = req.body.user_id;
 });
 
 // Endpoint para obtener las imágenes
-router.get("/images", async (req, res) => {
+router.get("/images",middleware, async (req, res) => {
   console.log('solicitos')
   try {
     const [rows] = await db.query("SELECT * FROM images");
@@ -83,7 +83,7 @@ router.get("/images", async (req, res) => {
 
 
 
-router.post('/upload2', upload.single('image'), async (req:any, res:any) => {
+router.post('/upload2',middleware,upload.single('image'), async (req:any, res:any) => {
   try {
     const filePath = req.file.path;
     
@@ -95,7 +95,7 @@ router.post('/upload2', upload.single('image'), async (req:any, res:any) => {
     res.status(500).json({ message: 'Error al cargar la imagen', error });
   }
 });
-router.get('/', async (req, res) => {
+router.get('/',middleware, async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT * FROM images ORDER BY created_at DESC');
     res.status(200).json(rows);
