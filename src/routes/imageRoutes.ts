@@ -44,7 +44,6 @@ router.post("/upload", upload.single("image"), async (req:any, res:any) => {
     // Redimensionar la imagen
     image.resize({w:width, h:height}); // Usar AUTO si solo se proporciona uno de los dos valores
     await image.write(processedPath);
-
     // Guardar la URL en la base de datos
     const url = `http://localhost:5001/${processedPath}`;
     await db.query("INSERT INTO images (url) VALUES (?)", [url]);
